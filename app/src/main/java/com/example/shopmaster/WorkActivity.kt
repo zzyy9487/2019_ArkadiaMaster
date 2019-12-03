@@ -50,9 +50,7 @@ class WorkActivity : AppCompatActivity() {
     lateinit var adapter:ListAdapter
     lateinit var shared :SharedPreferences
     var bitmap:ByteArray? = null
-    var list = mutableListOf<CellItem>()
     var token :String =""
-    var array = listOf("糧食", "軍事", "特殊", "隱藏組合")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -171,20 +169,16 @@ class WorkActivity : AppCompatActivity() {
 
             override fun onResponse(call: Call<ListData>, response: Response<ListData>) {
                 if (response.code() == 200) {
-                    val data = response.body()
-                    list.clear()
-                    for (i in 0 until data!!.items.size) {
-                        list.add(
-                            i,
-                            CellItem(
-                                data.items[i].id,
-                                data.items[i].sort_id,
-                                array[data.items[i].sort_id - 1],
-                                data.items[i].item_name,
-                                data.items[i].price,
-                                data.items[i].stock ?: 0,
-                                data.items[i].pic ?: ""
-                            )
+                    val readableSortTypeMap = mapOf(1 to "糧食", 2 to "軍事", 3 to  "特殊", 4 to "隱藏組合")
+                    val list = response.body()!!.items.map {
+                        CellItem(
+                            it.id,
+                            it.sort_id,
+                            it.sort_id.let { readableSortTypeMap.getOrDefault(it,"Unknown") },
+                            it.item_name,
+                            it.price,
+                            it.stock?:0,
+                            it.pic?:""
                         )
                     }
                     adapter.update(list)
