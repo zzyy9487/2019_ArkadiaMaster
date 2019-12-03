@@ -29,7 +29,7 @@ class ListAdapter:RecyclerView.Adapter<ListAdapter.ViewHolder>() {
         fun removeItemData(id:Int)
     }
 
-    fun setclickedListener(checkedListener: clickedListener){
+    fun setClickListener(checkedListener: clickedListener){
         this.itemClickListener = checkedListener
     }
 
