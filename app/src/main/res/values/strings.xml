@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">ShopMaster</string>
+    <string name="resname">暱稱：</string>
+    <string name="resnamehint">請在此填入暱稱</string>
+    <string name="resaccount">帳號：</string>
+    <string name="resaccounthint">請在此填入帳號</string>
+    <string name="respassword">密碼：</string>
+    <string name="respasshint">請在此填入密碼</string>
+    <string name="login">登入</string>
+    <string name="clear">清空</string>
+    <string name="storename">放羊的孩子｜A Sheep Child</string>
+</resources>
