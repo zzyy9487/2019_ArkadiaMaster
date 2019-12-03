@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -23,14 +22,12 @@ import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
-import com.example.shopmaster.add.AddBody
 import com.example.shopmaster.add.AddData
 import com.example.shopmaster.delete.DeleteData
 import com.example.shopmaster.getList.CellItem
 import com.example.shopmaster.getList.ListAdapter
 import com.example.shopmaster.getList.ListData
 import com.example.shopmaster.modify.ModifyData
-import com.example.shopmaster.photoupload.UploadBody
 import kotlinx.android.synthetic.main.activity_work.*
 import kotlinx.android.synthetic.main.alert_layout2.view.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -42,6 +39,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.ByteArrayOutputStream
+import java.lang.Exception
 
 class WorkActivity : AppCompatActivity() {
 
@@ -51,6 +49,29 @@ class WorkActivity : AppCompatActivity() {
     lateinit var shared :SharedPreferences
     var bitmap:ByteArray? = null
     var token :String =""
+
+     open inner class RefreshCallback<T>: Callback<T> {
+        override fun onFailure(call: Call<T>, t: Throwable) {
+            Toast.makeText(this@WorkActivity, "Unable to fetch data from API",Toast.LENGTH_SHORT).show()
+            doAfterFailure()
+        }
+
+        override fun onResponse(call: Call<T>, response: Response<T>) {
+            if (response.isSuccessful){
+                fetchAlbum()
+                doAfterSuccess(response)
+            }
+        }
+
+        open fun doAfterSuccess(response: Response<T>) {
+
+        }
+
+        open fun doAfterFailure(){
+
+        }
+
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -108,19 +129,15 @@ class WorkActivity : AppCompatActivity() {
                         price2.text.toString().toInt(),
                         stock2.text.toString().toInt(),
                         pic2.text.toString()
-                    ).enqueue(object : Callback<ModifyData>{
-                        override fun onFailure(call: Call<ModifyData>, t: Throwable) {
+                    ).enqueue(object : RefreshCallback<ModifyData>() {
+                        override fun doAfterFailure() {
                             btnCancelEdit.isEnabled = true
                             btnSubmitEdit.isEnabled = true
                         }
 
-                        override fun onResponse(call: Call<ModifyData>, response: Response<ModifyData>) {
-                            if (response.isSuccessful){
-                                val data = response.body()
-                                Toast.makeText(this@WorkActivity, data!!.msg, Toast.LENGTH_LONG).show()
-                                fetchAlbum()
-                                dialog.dismiss()
-                            }
+                        override fun doAfterSuccess(response: Response<ModifyData>) {
+                            Toast.makeText(this@WorkActivity, response.body()!!.msg, Toast.LENGTH_LONG).show()
+                            dialog.dismiss()
                         }
                     })
                 }
@@ -135,19 +152,7 @@ class WorkActivity : AppCompatActivity() {
             override fun removeItemData(id:Int) {
                 apiInterface
                     .delete(id.toString(), token)
-                    .enqueue(object : Callback<DeleteData>{
-                    override fun onFailure(call: Call<DeleteData>, t: Throwable) {
-                        Toast.makeText(this@WorkActivity,"Unable to remove item $id",Toast.LENGTH_SHORT).show()
-                    }
-
-                    override fun onResponse(call: Call<DeleteData>, response: Response<DeleteData>) {
-                        if (response.isSuccessful){
-                            val data = response.body()
-                            Toast.makeText(this@WorkActivity, data!!.msg, Toast.LENGTH_LONG).show()
-                            fetchAlbum()
-                        }
-                    }
-                })
+                    .enqueue(object :RefreshCallback<DeleteData>(){})
             }
         })
 
@@ -170,17 +175,19 @@ class WorkActivity : AppCompatActivity() {
             override fun onResponse(call: Call<ListData>, response: Response<ListData>) {
                 if (response.code() == 200) {
                     val readableSortTypeMap = mapOf(1 to "糧食", 2 to "軍事", 3 to  "特殊", 4 to "隱藏組合")
-                    val list = response.body()!!.items.map {
-                        CellItem(
-                            it.id,
-                            it.sort_id,
-                            it.sort_id.let { readableSortTypeMap.getOrDefault(it,"Unknown") },
-                            it.item_name,
-                            it.price,
-                            it.stock?:0,
-                            it.pic?:""
-                        )
-                    }
+                    val list = response.body()!!.items
+                        .map {
+                            CellItem(
+                                it.id,
+                                it.sort_id,
+                                it.sort_id.let { readableSortTypeMap.getOrDefault(it,"Unknown") },
+                                it.item_name,
+                                it.price,
+                                it.stock?:0,
+                                it.pic?:""
+                            )
+                        }
+                        .sortedBy { it.sort_id }
                     adapter.update(list)
                 }
             }
@@ -243,17 +250,23 @@ class WorkActivity : AppCompatActivity() {
                 .load(photoUri)
                 .downsample(DownsampleStrategy.DEFAULT)
                 .listener(object : RequestListener<Bitmap> {
-                    override fun onResourceReady(resource: Bitmap?, model: Any?, target: Target<Bitmap>?, dataSource: DataSource?, isFirstResource: Boolean ): Boolean {
+                    override fun onResourceReady(resource: Bitmap, model: Any?, target: Target<Bitmap>?, dataSource: DataSource?, isFirstResource: Boolean ): Boolean {
 
-                        val stream = ByteArrayOutputStream()
-                        resource?.compress(Bitmap.CompressFormat.JPEG, 60, stream)
-                        val byteArray = stream.toByteArray()
+                        try {
+                            val stream = ByteArrayOutputStream()
+                            resource.compress(Bitmap.CompressFormat.JPEG, 60, stream)
+                            stream.close()
+                            val byteArray = stream.toByteArray()
+                            runOnUiThread{
+                                bitmap = byteArray
+                                btnSubmitUpload.isEnabled = true
+                            }
 
-                        resource?.recycle()
-                        runOnUiThread{
-                            bitmap = byteArray
-                            btnSubmitUpload.isEnabled = true
+                        }catch (e:Exception){
+                            e.printStackTrace()
                         }
+
+
                         return true
                     }
 
@@ -293,21 +306,12 @@ class WorkActivity : AppCompatActivity() {
 
                 apiInterface
                     .add(additem_name, addsort_id, addprice, addstock, body, token)
-                    .enqueue(object :retrofit2.Callback<AddData>{
-                    override fun onFailure(call: Call<AddData>, t: Throwable) {
-                        Log.e("api", t.message)
-                    }
-                    override fun onResponse(call: Call<AddData>, response: Response<AddData>) {
-                        Log.i("addapi", "succed ${response.code()}")
-                        if (response.isSuccessful){
-                            val data = response.body()
-                            Toast.makeText(this@WorkActivity, data!!.msg, Toast.LENGTH_LONG).show()
-                            fetchAlbum()
-
+                    .enqueue(object : RefreshCallback<AddData>() {
+                        override fun doAfterSuccess(response: Response<AddData>) {
+                            Toast.makeText(this@WorkActivity, response.body()!!.msg, Toast.LENGTH_LONG).show()
                             dialog.dismiss()
                         }
-                    }
-                })
+                    })
 
             }
             btnCancelUpload.setOnClickListener {
