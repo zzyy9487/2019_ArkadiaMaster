@@ -134,8 +134,13 @@ class LocalActivity : AppCompatActivity() {
         timer.schedule(timerTask, 10000, 10000)
 
 
-        btn_work.setOnClickListener {
-            val intent = Intent(this@LocalActivity, WorkActivity::class.java)
+        btn_item.setOnClickListener {
+            val intent = Intent(this@LocalActivity, ItemActivity::class.java)
+            startActivity(intent)
+        }
+
+        btn_msg.setOnClickListener {
+            val intent = Intent(this@LocalActivity, MsgActivity::class.java)
             startActivity(intent)
         }
     }

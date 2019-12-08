@@ -2,14 +2,10 @@ package com.example.shopmaster
 
 import android.Manifest
 import android.app.Activity
-import android.app.PendingIntent.getActivity
 import android.content.Intent
-import android.content.Intent.ACTION_PICK
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.net.Uri
-import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
@@ -54,7 +50,7 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.lang.Exception
 
-class WorkActivity : AppCompatActivity() {
+class ItemActivity : AppCompatActivity() {
 
     private lateinit var alertView: View
     private lateinit var apiInterface: APIInterface
@@ -67,13 +63,11 @@ class WorkActivity : AppCompatActivity() {
     companion object {
         private val PHOTO_FROM_ALBUM = 0
         private val PHOTO_FROM_CAMERA = 1
-        private val PERMISSION_CODE = 2
-        private val PHOTO_FROM_GALLERY = 3
     }
 
      open inner class RefreshCallback<T>: Callback<T> {
         override fun onFailure(call: Call<T>, t: Throwable) {
-            Toast.makeText(this@WorkActivity, "Unable to fetch data from API",Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@ItemActivity, "Unable to fetch data from API",Toast.LENGTH_SHORT).show()
             doAfterFailure()
         }
 
@@ -117,7 +111,7 @@ class WorkActivity : AppCompatActivity() {
 
         apiInterface = retrofit.create(APIInterface::class.java)
 
-        val inflater = this@WorkActivity.layoutInflater
+        val inflater = this@ItemActivity.layoutInflater
         alertView = inflater.inflate(R.layout.alert_layout2, null)
 
         adapter.setClickListener(object :ListAdapter.clickedListener{
@@ -131,7 +125,7 @@ class WorkActivity : AppCompatActivity() {
                 val modify_btnEdit = alertView.textAdd2
                 val modify_btnCancel = alertView.textCancel2
 
-                val dialog = AlertDialog.Builder(this@WorkActivity)
+                val dialog = AlertDialog.Builder(this@ItemActivity)
                     .setView(alertView)
                     .create()
 
@@ -160,7 +154,7 @@ class WorkActivity : AppCompatActivity() {
                         }
 
                         override fun doAfterSuccess(response: Response<ModifyData>) {
-                            Toast.makeText(this@WorkActivity, response.body()!!.msg, Toast.LENGTH_LONG).show()
+                            Toast.makeText(this@ItemActivity, response.body()!!.msg, Toast.LENGTH_LONG).show()
                             dialog.dismiss()
                         }
                     })
@@ -178,7 +172,7 @@ class WorkActivity : AppCompatActivity() {
                     .delete(id.toString(), token)
                     .enqueue(object :RefreshCallback<DeleteData>(){
                         override fun doAfterSuccess(response: Response<DeleteData>) {
-                            Toast.makeText(this@WorkActivity, response.body()!!.msg, Toast.LENGTH_LONG).show()
+                            Toast.makeText(this@ItemActivity, response.body()!!.msg, Toast.LENGTH_LONG).show()
                         }
                     })
             }
@@ -219,7 +213,7 @@ class WorkActivity : AppCompatActivity() {
 
         call.enqueue(object : Callback<ListData> {
             override fun onFailure(call: Call<ListData>, t: Throwable) {
-                Toast.makeText(this@WorkActivity,"Unable to fetch album data from api",Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@ItemActivity,"Unable to fetch album data from api",Toast.LENGTH_SHORT).show()
             }
 
             override fun onResponse(call: Call<ListData>, response: Response<ListData>) {
@@ -257,7 +251,7 @@ class WorkActivity : AppCompatActivity() {
                 when (resultCode){
                     Activity.RESULT_OK -> {
 
-                        val inflater = this@WorkActivity.layoutInflater
+                        val inflater = this@ItemActivity.layoutInflater
                         val view = inflater.inflate(R.layout.alert_layout, null)
                         val imgUpload = view.findViewById<ImageView>(R.id.imageUpload)
                         val item_name = view.findViewById<EditText>(R.id.edItem_name)
@@ -294,7 +288,7 @@ class WorkActivity : AppCompatActivity() {
                                 }
 
                                 override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Bitmap>?, isFirstResource: Boolean): Boolean {
-                                    Toast.makeText(this@WorkActivity,"Unable to load image",Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(this@ItemActivity,"Unable to load image",Toast.LENGTH_SHORT).show()
 
                                     return true
                                 }
@@ -309,13 +303,13 @@ class WorkActivity : AppCompatActivity() {
                             .transform(RoundedCorners(10))
                             .into(imgUpload)
 
-                        val dialog = AlertDialog.Builder(this@WorkActivity)
+                        val dialog = AlertDialog.Builder(this@ItemActivity)
                             .setView(view)
                             .create()
 
                         btnSubmitUpload.setOnClickListener {
                             if (item_name.text.isNullOrEmpty() or sort_id.text.isNullOrEmpty() or stock.text.isNullOrEmpty() or price.text.isNullOrEmpty()){
-                                Toast.makeText(this@WorkActivity, "你又漏填了什麼...", Toast.LENGTH_LONG).show()
+                                Toast.makeText(this@ItemActivity, "你又漏填了什麼...", Toast.LENGTH_LONG).show()
                                 return@setOnClickListener
                             }
 
@@ -330,7 +324,7 @@ class WorkActivity : AppCompatActivity() {
                                 .add(additem_name, addsort_id, addprice, addstock, body, token)
                                 .enqueue(object : RefreshCallback<AddData>() {
                                     override fun doAfterSuccess(response: Response<AddData>) {
-                                        Toast.makeText(this@WorkActivity, response.body()!!.msg, Toast.LENGTH_LONG).show()
+                                        Toast.makeText(this@ItemActivity, response.body()!!.msg, Toast.LENGTH_LONG).show()
                                         dialog.dismiss()
                                     }
                                 })
@@ -354,7 +348,7 @@ class WorkActivity : AppCompatActivity() {
                 when (resultCode){
                     Activity.RESULT_OK -> {
                         if (data==null)return
-                        val inflater = this@WorkActivity.layoutInflater
+                        val inflater = this@ItemActivity.layoutInflater
                         val view = inflater.inflate(R.layout.alert_layout, null)
                         val imgUpload = view.findViewById<ImageView>(R.id.imageUpload)
                         val item_name = view.findViewById<EditText>(R.id.edItem_name)
@@ -392,7 +386,7 @@ class WorkActivity : AppCompatActivity() {
                                 }
 
                                 override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Bitmap>?, isFirstResource: Boolean): Boolean {
-                                    Toast.makeText(this@WorkActivity,"Unable to load image",Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(this@ItemActivity,"Unable to load image",Toast.LENGTH_SHORT).show()
 
                                     return true
                                 }
@@ -407,13 +401,13 @@ class WorkActivity : AppCompatActivity() {
                             .transform(RoundedCorners(10))
                             .into(imgUpload)
 
-                        val dialog = AlertDialog.Builder(this@WorkActivity)
+                        val dialog = AlertDialog.Builder(this@ItemActivity)
                             .setView(view)
                             .create()
 
                         btnSubmitUpload.setOnClickListener {
                             if (item_name.text.isNullOrEmpty() or sort_id.text.isNullOrEmpty() or stock.text.isNullOrEmpty() or price.text.isNullOrEmpty()){
-                                Toast.makeText(this@WorkActivity, "你又漏填了什麼...", Toast.LENGTH_LONG).show()
+                                Toast.makeText(this@ItemActivity, "你又漏填了什麼...", Toast.LENGTH_LONG).show()
                                 return@setOnClickListener
                             }
 
@@ -428,7 +422,7 @@ class WorkActivity : AppCompatActivity() {
                                 .add(additem_name, addsort_id, addprice, addstock, body, token)
                                 .enqueue(object : RefreshCallback<AddData>() {
                                     override fun doAfterSuccess(response: Response<AddData>) {
-                                        Toast.makeText(this@WorkActivity, response.body()!!.msg, Toast.LENGTH_LONG).show()
+                                        Toast.makeText(this@ItemActivity, response.body()!!.msg, Toast.LENGTH_LONG).show()
                                         dialog.dismiss()
                                     }
                                 })

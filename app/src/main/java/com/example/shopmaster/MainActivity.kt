@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() {
                         if (response.code() == 200){
                             val data = response.body()
                             shared.setToken(data!!.now_flower.api_token)
-                            Toast.makeText(this@MainActivity, data!!.msg, Toast.LENGTH_LONG).show()
+                            Toast.makeText(this@MainActivity, data!!.msg, Toast.LENGTH_SHORT).show()
                             val intent = Intent(this@MainActivity, LocalActivity::class.java)
                             startActivity(intent)
                         }

@@ -4,12 +4,15 @@ import com.example.shopmaster.add.AddBody
 import com.example.shopmaster.add.AddData
 import com.example.shopmaster.delete.DeleteData
 import com.example.shopmaster.getList.ListData
+import com.example.shopmaster.getMsg.GetMsgData
 import com.example.shopmaster.login.LoginBody
 import com.example.shopmaster.login.LoginData
 import com.example.shopmaster.modify.ModifyData
 import com.example.shopmaster.photoupload.UploadBody
 import com.example.shopmaster.photoupload.UploadData
 import com.example.shopmaster.record.RecordData
+import com.example.shopmaster.sendMsg.SendMsgBody
+import com.example.shopmaster.sendMsg.SendMsgData
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
@@ -71,5 +74,16 @@ interface APIInterface {
 //        @Header("Authorization") token:String,
 //        @Body body:UploadBody
 //    ):Call<UploadData>
+
+    @GET("/api/allmsg")
+    fun getMsg(
+        @Header("Authorization") token:String
+    ):Call<GetMsgData>
+
+    @PUT("/api/wolfreplay")
+    fun sendMsg(
+        @Header("Authorization") token:String,
+        @Body body:SendMsgBody
+    ):Call<SendMsgData>
 
 }

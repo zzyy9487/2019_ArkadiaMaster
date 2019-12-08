@@ -4,6 +4,7 @@ import android.graphics.NinePatch
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -14,7 +15,7 @@ import kotlinx.android.synthetic.main.cell_layout.view.*
 
 class ListAdapter:RecyclerView.Adapter<ListAdapter.ViewHolder>() {
 
-    private var inputList = mutableListOf<CellItem>()
+    private var inputList = listOf<CellItem>()
     private var itemClickListener: clickedListener? = null
 
     private val rItemDragHelperCallback = RecyclerViewItemTouchHelper()
@@ -111,12 +112,27 @@ class ListAdapter:RecyclerView.Adapter<ListAdapter.ViewHolder>() {
     }
 
 
-
-
-
-
-    fun update(newList: MutableList<CellItem>){
+    fun update(newList: List<CellItem>){
+//        val res = DiffUtil.calculateDiff(object :DiffUtil.Callback(){
+//            override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+//                return inputList[oldItemPosition].id == newList[newItemPosition].id
+//            }
+//
+//            override fun getOldListSize(): Int {
+//                return inputList.size
+//            }
+//
+//            override fun getNewListSize(): Int {
+//                return newList.size
+//            }
+//
+//            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+//                return inputList[oldItemPosition] == newList[newItemPosition]
+//            }
+//
+//        })
         inputList = newList
+//        res.dispatchUpdatesTo(this)
         notifyDataSetChanged()
     }
 
