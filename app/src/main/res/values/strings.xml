@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ShopMaster</string>
+    <string name="app_name">ShopMasterArkadia</string>
     <string name="resname">暱稱：</string>
     <string name="resnamehint">請在此填入暱稱</string>
     <string name="resaccount">帳號：</string>

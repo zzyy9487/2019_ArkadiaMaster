@@ -117,7 +117,9 @@ class MsgActivity : AppCompatActivity() {
                                 it.wolf_id,
                                 it.wolf_msg,
                                 it.created_at,
-                                it.updated_at
+                                it.updated_at,
+                                it.name,
+                                it.type
                             )
                         }
                         .sortedBy { it.id }

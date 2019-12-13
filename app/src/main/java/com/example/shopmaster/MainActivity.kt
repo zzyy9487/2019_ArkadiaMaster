@@ -16,8 +16,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 class MainActivity : AppCompatActivity() {
 
     val name:String = "Arcadia"
-    val account:String = "SheepChild"
-    val password:String = "makeright"
+    val account:String = "bala"
+    val password:String = "00000000"
     lateinit var body: LoginBody
     lateinit var shared :SharedPreferences
 
@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
         editRespass.setText(password)
 
         btn_login.setOnClickListener {
-            body = LoginBody(account, password)
+            body = LoginBody(editResaccount.text.toString(), editRespass.text.toString())
             val retrofit = Retrofit.Builder()
                 .baseUrl("http://35.234.60.173")
                 .addConverterFactory(GsonConverterFactory.create())

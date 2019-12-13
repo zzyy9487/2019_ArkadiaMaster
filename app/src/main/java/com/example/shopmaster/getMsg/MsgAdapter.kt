@@ -13,8 +13,6 @@ import java.lang.Math.random
 
 class MsgAdapter:RecyclerView.Adapter<MsgAdapter.ViewHolder>() {
 
-    var whattype :Int = 0
-    var whatname :String = ""
     private var inputList = listOf<AllMsgItem>()
     var userImageList = listOf(
         R.drawable.fireicon,
@@ -60,10 +58,18 @@ class MsgAdapter:RecyclerView.Adapter<MsgAdapter.ViewHolder>() {
 
         fun bindViewHolder(allMsgItem: AllMsgItem){
 
-            Glide.with(itemView).load(userImageList.random())
+            var photo = 0
+            if (allMsgItem.type == "fire"){
+                photo = R.drawable.fireicon
+            } else if (allMsgItem.type == "water"){
+                photo = R.drawable.watericon
+            } else if (allMsgItem.type == "grass"){
+                photo = R.drawable.grassicon
+            }
+            Glide.with(itemView).load(photo)
                 .transform(CircleCrop())
                 .into(userImage)
-            userName.text = whatname
+            userName.text = allMsgItem.name
             userSay.text = allMsgItem.sheep_msg
 
             Glide.with(itemView).load(R.drawable.kaka)
