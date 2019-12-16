@@ -16,6 +16,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 class MainActivity : AppCompatActivity() {
 
     
+    
+    var test:String = ""
     val name:String = "Arcadia"
     val account:String = "bala"
     val password:String = "00000000"
