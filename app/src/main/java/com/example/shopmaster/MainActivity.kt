@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
         btn_login.setOnClickListener {
             body = LoginBody(editResaccount.text.toString(), editRespass.text.toString())
             val retrofit = Retrofit.Builder()
-                .baseUrl("http://35.234.60.173")
+                .baseUrl("http://35.229.181.103")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
             val apiInterface = retrofit.create(APIInterface::class.java)

@@ -105,7 +105,7 @@ class ItemActivity : AppCompatActivity() {
         recyclerView.adapter = adapter
 
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://35.234.60.173")
+            .baseUrl("http://35.229.181.103")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
@@ -272,7 +272,7 @@ class ItemActivity : AppCompatActivity() {
 
                                     try {
                                         val stream = ByteArrayOutputStream()
-                                        resource.compress(Bitmap.CompressFormat.JPEG, 60, stream)
+                                        resource.compress(Bitmap.CompressFormat.PNG, 60, stream)
                                         stream.close()
                                         val byteArray = stream.toByteArray()
                                         runOnUiThread{
@@ -370,7 +370,7 @@ class ItemActivity : AppCompatActivity() {
 
                                     try {
                                         val stream = ByteArrayOutputStream()
-                                        resource.compress(Bitmap.CompressFormat.JPEG, 60, stream)
+                                        resource.compress(Bitmap.CompressFormat.PNG, 60, stream)
                                         stream.close()
                                         val byteArray = stream.toByteArray()
                                         runOnUiThread{
